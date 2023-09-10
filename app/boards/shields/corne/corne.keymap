@@ -2,26 +2,74 @@
  * Copyright (c) 2020 The ZMK Contributors
  *
  * SPDX-License-Identifier: MIT
+ *
+ * @bzgec : isyatsyso
+ ***************************************************************************************************
+ * norwegian qwerty in base, with persnal flavour for add layers
+ ***************************************************************************************************
+ * Host layout: SI *
+ ***************************************************************************************************
+ * ZMK layer: (note: maybe)
+ ***************************************************************************************************
+ *  +--------+--------+--------+--------+--------+--------+             +--------+--------+--------+--------+--------+--------+
+ *  | XXX    | BT 0   | BT 1   | BT 2   | BT 3   | BT 4   |             |        |        |        |        |        |        |
+ *  +--------+--------+--------+--------+--------+--------+             +--------+--------+--------+--------+--------+--------+
+ *  |        | BT CLR |        | EP ON  | EP OFF | Reset  |             |        | To SI  | To SI  | To AoE |        |        |
+ *  |        |        |        |        |        |        |             |        | Linux  | Win    |        |        |        |
+ *  +--------+--------+--------+--------+--------+--------+             +--------+--------+--------+--------+--------+--------+
+ *  |        |        |        |        |        | Bootl  |             |        |        |        |        |        |        |
+ *  +--------+--------+--------+----+---+----+---+----+---+----+   +----+---+----+---+----+---+----+--------+--------+--------+
+ *                                  |        |        |        |   |        |        |        |
+ *                                  +--------+--------+--------+   +--------+--------+--------+
+ *
+ * - `BT 0-4`: Select the x bluetooth profile
+ * - `BT CLR`: Clear bond between the keyboard and the host for the selected profile
+ * - `Reset`: Reset this side of the keyboard
+ * - `Bootl`: Reset this side of the keyboard to bootloader mode
+ * - `EP ON`: Enable external power (enable VCC power output)
+ * - `To SI Linux`: Switch keyboard layout to match SI host layout, Linux host
+ * - `To SI Win`: Switch keyboard layout to match SI host layout, Windows host
+ * - `EP OFF`: Disable external power (disable VCC power output)
+ *
+ * - Difference between "SI Linux" and "SI Windows" is in how a few special characters
+ *   are implemented but for the end use there should be no difference
+ *
+ *   - `no_n6_lin`    -> `no_n6_win` (`^`)
+ *   - `no_grave_lin` -> `no_grave_win` (`\``, `~`)
+ *
+ ***************************************************************************************************
  */
 
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
+#include "./keys_no.h"
 
+
+#define xxx &none
 #define ___ &trans
 
+// https://zmk.dev/docs/features/debouncing
+&kscan0 {
+    debounce-press-ms = <3>;    // Default is 5 ms
+    debounce-release-ms = <4>;  // Default is 5 ms
+};
+
+
 / {
-        keymap {
-                compatible = "zmk,keymap";
+
+
+    keymap {
+        compatible = "zmk,keymap";
                 default_layer {	
                         bindings = <
-// |---------|---------|---------|---------|---------|---------|----|---------|---------|---------|---------|---------|---------|
-// |   TAB   |   Q     |   W     |   E     |   R     |   T     |    |   Y     |   U     |   I     |   O     |   P     |   Å     |
-   &kp TAB   &kp Q     &kp W     &kp E     &kp R     &kp T          &kp Y     &kp U     &kp I     &kp O     &kp P     &kp BSPC
-// |    CTRL |   A     |   S     |   D     |   F     |   G     |    |   H     |   J     |   K     |   L     |   Ø     |   Æ     |
-   &kp LCTRL &kp A     &kp S     &kp D     &kp F     &kp G          &kp H     &kp J     &kp K     &kp L     &kp SEMI  &kp SQT
-// |    SHFT |   Z     |   X     |   C     |   V     |   B     |    |   N     |   M     |   ,     |   .     |   -     |   RSHFT |
-   &kp LSHFT &kp Z     &kp X     &kp C     &kp V     &kp B          &kp N     &kp M     &kp COMMA &kp DOT   &kp MINUS &kp RSHFT
+// |---------|---------|---------|---------|---------|---------|----|---------|---------|--------__-|---------|--------__-|---------|
+// |   TAB   |   Q     |   W     |   E     |   R     |   T     |    |   Y     |   U     |   I       |   O     |   P       |   Å     |
+   &kp TAB   &kp NO_Q  &kp NO_W  &kp NO_E  &kp NO_R  &kp NO_T       &kp NO_Y  &kp NO_U  &kp NO_I    &kp NO_O  &kp NO_P    &kp NO_ARNG
+// |    CTRL |   A     |   S     |   D     |   F     |   G     |    |   H     |   J     |   K       |   L     |   Ø       |   Æ     |
+   &kp LCTRL &kp NO_A  &kp NO_S  &kp NO_D  &kp NO_F  &kp NO_G       &kp NO_H  &kp NO_J  &kp NO_K    &kp NO_L  &kp NO_OSTR &kp NO_AE
+// |    SHFT |   Z     |   X     |   C     |   V     |   B     |    |   N     |   M     |   ,       |   .     |   -       |   RSHFT |
+   &kp LSHFT &kp NO_Z  &kp NO_X  &kp NO_C  &kp NO_V  &kp NO_B       &kp NO_N  &kp NO_M  &kp NO_COMM &kp NO_DOT   &kp NO_MINS &kp RSHFT
 //                    |    GUI |       |   ENT |   |    SPC  |       |   BSPC |
                       &kp LGUI &mo 1 &kp RET     &kp SPACE &mo 2 &kp BSPC
                         >;
@@ -52,5 +100,6 @@
                       &kp LGUI   ___  &kp RET     &kp SPACE   ___  &kp BSPC
                         >;
                 };
-        };
+
+    };
 };
